@@ -1,0 +1,21 @@
+.card {
+  min-width: 350px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .login_title {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .remember {
+    float: left;
+  }
+  .login-form-forgot {
+    float: right;
+  }
+  .login-form-button {
+    width: 100%;
+  }
+}
