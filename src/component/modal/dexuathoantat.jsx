@@ -21,7 +21,7 @@ function DeleteCvd(props) {
       onOk() {
         dispatch({
           type: 'UPDATE_CVD',
-          payload: { id: props.id, data: { trangthai: 1 } },
+          payload: { id: props.id, data: { trangthai: 2, notification: 3 } },
         });
         console.log('OK');
       },

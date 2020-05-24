@@ -5,8 +5,9 @@
   padding: 0px 16px;
   margin-bottom: 8px;
 }
-.hiddenID {
-  padding: 0px !important;
-  border: none !important;
-  width: 0px !important;
+.noti {
+  background-color: #9cd9ff;
+  &:hover td {
+    background-color: #8bd2fd !important;
+  }
 }

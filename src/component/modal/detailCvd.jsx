@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Button, Tooltip, Row, Col, Typography } from 'antd';
 import { DashOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Axios from '../../axios/configAxios';
 
 const { Text } = Typography;
@@ -25,15 +25,30 @@ const loaiCv = [
 
 function DetailCvd(props) {
   const [Cvd, setCvd] = React.useState({});
-
+  const dispatch = useDispatch();
   const usersList = useSelector((state) => state.usersList);
-
+  const userInfo = useSelector((state) => state.userInfo);
   React.useEffect(() => {
     if (props.Open) {
       Axios.get(`/cvd/${props.id}`)
         .then((data) => {
           setCvd(data.data);
           console.log(data.data);
+          return data.data;
+        })
+        .then((data) => {
+          if (
+            data.trangthai === 0 &&
+            userInfo._id === data.nguoithuchienchinh
+          ) {
+            dispatch({
+              type: 'UPDATE_CVD',
+              payload: {
+                id: props.Open,
+                data: { trangthai: 1, notification: 2 },
+              },
+            });
+          }
         })
         .catch((error) => console.log(error));
     }

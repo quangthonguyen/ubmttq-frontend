@@ -1,5 +1,13 @@
 import React from 'react';
-import { Layout, Menu, Avatar, Popover, Button } from 'antd';
+import {
+  Layout,
+  Menu,
+  Avatar,
+  Popover,
+  Button,
+  notification,
+  Badge,
+} from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -29,13 +37,34 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { reduxRemoveUserInfo } from '../../redux/slice/userInfo';
 import io from 'socket.io-client';
+const socket = io('http://localhost:5000');
+// const socket = io('https://api-ummttqqbt.herokuapp.com');
 
+const badge = {
+  top: '8px',
+  right: '-4px',
+  fontSize: '10px',
+  padding: '0px',
+  minWidth: '12px',
+  maxHeight: '12px',
+  lineHeight: '10px',
+};
+const badge2 = {
+  top: '-3px',
+  right: '7px',
+  fontSize: '10px',
+  padding: '0px',
+  minWidth: '12px',
+  maxHeight: '12px',
+  lineHeight: '10px',
+};
 const { Header, Sider, Content } = Layout;
 const quyen = ['Guest', 'Admin'];
 function DashBoard() {
   const [collapsed, setCollapsed] = React.useState(true);
   const match = useRouteMatch();
   const userInfo = useSelector((state) => state.userInfo);
+  const notificationState = useSelector((state) => state.notification);
   const dispatch = useDispatch();
   const content = (
     <div style={{ textAlign: 'Center' }}>
@@ -57,20 +86,54 @@ function DashBoard() {
   const { access } = userInfo;
   React.useEffect(() => {
     if (userInfo._id) {
-      // const socket = io('http://localhost:5000');
-      const socket = io('https://api-ummttqqbt.herokuapp.com');
-      socket.on('news', (data) => {
+      socket.on('socketAddCvd', (data) => {
         if (data.nguoithuchien.filter((e) => e === userInfo._id).length > 0) {
           dispatch({ type: 'SOCKET_ADD_CVD', payload: data });
         }
-        console.log(
-          data.nguoithuchien.filter((e) => e === userInfo._id).length
-        );
-        console.log({ Socket: data });
       });
+      if (userInfo.access === 1) {
+        socket.on('socketDeXuatHoanThanh', (data) => {
+          notification.info({
+            message: ` Đề xuất hoàn thành từ văn bản số ${data.sovb}!`,
+            placement: 'bottomRight',
+            duration: 0,
+          });
+          dispatch({ type: 'NOTI_QLCV_ADD_ONE' });
+        });
+      }
+      if (userInfo.access === 0) {
+        socket.on('socketTuChoiDeXuat', (data) => {
+          if (data.nguoithuchien.filter((e) => e === userInfo._id).length > 0) {
+            notification.warning({
+              message: ` Văn bản số ${data.sovb} bị từ chối!`,
+              placement: 'bottomRight',
+              duration: 0,
+            });
+          }
+          dispatch({ type: 'NOTI_GUEST_ADD_ONE' });
+        });
+        socket.on('socketHoanThanh', (data) => {
+          if (data.nguoithuchien.filter((e) => e === userInfo._id).length > 0) {
+            notification.success({
+              message: ` Văn bản số ${data.sovb} hoàn thành!`,
+              placement: 'bottomRight',
+              duration: 0,
+            });
+          }
+          dispatch({ type: 'NOTI_GUEST_ADD_ONE' });
+        });
+        socket.on('socketdeleteCvd', (data) => {
+          dispatch({ type: 'SOCKET_REMOVE_CVD', payload: { _id: data._id } });
+        });
+      }
     }
   }, [userInfo._id]);
-
+  React.useEffect(() => {
+    socket.on('socketUpdateCvd', (data) => {
+      dispatch({ type: 'SOCKET_UPDATE_CVD', payload: data });
+      console.log({ socketUpdateCvd: data });
+    });
+  }, []);
   return (
     <>
       {localStorage.username && localStorage.password ? null : (
@@ -126,7 +189,16 @@ function DashBoard() {
                       to={`${match.url}`}
                       className={collapsed ? style.menuNav : ''}
                     >
-                      <MailOutlined />
+                      {access === 0 ? (
+                        <Badge
+                          count={notificationState.guestCvd}
+                          style={collapsed ? badge : badge2}
+                        >
+                          <MailOutlined />
+                        </Badge>
+                      ) : (
+                        <MailOutlined />
+                      )}
                     </NavLink>
                   }
                   className={style.sliderLi}
@@ -164,7 +236,12 @@ function DashBoard() {
                         to={`${match.url}/quanlycongviec`}
                         className={collapsed ? style.menuNav : ''}
                       >
-                        <DashboardOutlined />
+                        <Badge
+                          count={notificationState.qlcv}
+                          style={collapsed ? badge : badge2}
+                        >
+                          <DashboardOutlined className="head-example" />
+                        </Badge>
                       </Link>
                     }
                     className={style.sliderLi}

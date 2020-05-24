@@ -11,6 +11,7 @@ import {
   Row,
   Col,
   Tooltip,
+  notification,
 } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import Axios from '../../axios/configAxios';
@@ -118,10 +119,16 @@ function UpdateCvd(props) {
               return dataCvd;
             })
             .then((data) => {
-              console.log({ input: data });
               dispatch({
                 type: 'UPDATE_CVD',
                 payload: { id: props.id, data: data },
+              });
+              return data;
+            })
+            .then((data) => {
+              notification.success({
+                message: `Văn bản số ${data.sovb} cập nhập thành công `,
+                placement: 'bottomRight',
               });
             })
             .then(() => {

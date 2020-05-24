@@ -33,12 +33,21 @@ const loaiCv = [
   'Hướng dẫn',
 ];
 const trangThai = [
-  'Chờ thực hiện',
+  'Mới',
+  'Đã xem',
   'Đề xuất hoàn tất',
+  'Từ chối đề xuất',
   'Hoàn thành',
   'Hết hạn',
 ];
-const colorTrangthai = ['default', 'processing', 'success', 'error'];
+const colorTrangthai = [
+  'default',
+  'default',
+  'processing',
+  'warning',
+  'success',
+  'error',
+];
 
 function TableCVD() {
   const [load, setload] = useState(true);
@@ -61,7 +70,9 @@ function TableCVD() {
   const filterLoai = loaiCv.map((e, i) => {
     return { text: e, value: i };
   });
-
+  const filterTrangThai = trangThai.map((e, i) => {
+    return { text: e, value: i };
+  });
   const columns = [
     // {
     //   title: 'id',
@@ -194,24 +205,7 @@ function TableCVD() {
       render: (text, record, index) => {
         return <Tag color={colorTrangthai[text]}>{trangThai[text]}</Tag>;
       },
-      filters: [
-        {
-          text: 'Chờ thực hiện',
-          value: 0,
-        },
-        {
-          text: 'Đề xuất thực hiện',
-          value: 1,
-        },
-        {
-          text: 'Hoàn thành',
-          value: 2,
-        },
-        {
-          text: 'Hết hạn',
-          value: 3,
-        },
-      ],
+      filters: filterTrangThai,
       onFilter: (value, record) => record.trangthai === value,
       filterMultiple: false,
     },
@@ -227,7 +221,6 @@ function TableCVD() {
               <>
                 <UpdateModal id={record._id} />
                 <DeleteModal id={record._id} />
-                <FinishModal id={record._id} />
               </>
             ) : (
               <>
@@ -243,6 +236,14 @@ function TableCVD() {
                   size="small"
                   disabled={true}
                 />
+              </>
+            )}
+            {record.trangthai === 2 || record.trangthai === 3 ? (
+              <>
+                <FinishModal id={record._id} />
+              </>
+            ) : (
+              <>
                 <Button
                   type="link"
                   icon={<CheckCircleOutlined />}
@@ -268,10 +269,26 @@ function TableCVD() {
       </div>
       <DetailCvd id={Open} Open={Open} closeModal={closeModal} />
       <Table
+        rowClassName={(record, index) => {
+          return record.notification && record.notification === 3
+            ? style.noti
+            : '';
+        }}
         onRow={(record, rowIndex) => {
           return {
             onDoubleClick: (event) => {
               setOpen(record._id);
+            },
+            onClick: (event) => {
+              dispatch({
+                type: 'UPDATE_CVD',
+                payload: { id: record._id, data: { notification: 2 } },
+              });
+              if (record.notification === 3) {
+                dispatch({
+                  type: 'NOTI_QLCV_REMOVE_ONE',
+                });
+              }
             },
           };
         }}

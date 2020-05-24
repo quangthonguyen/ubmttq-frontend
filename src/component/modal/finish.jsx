@@ -21,11 +21,15 @@ function DeleteCvd(props) {
       onOk() {
         dispatch({
           type: 'UPDATE_CVD',
-          payload: { id: props.id, data: { trangthai: 2 } },
+          payload: { id: props.id, data: { trangthai: 4, notification: 1 } },
         });
         console.log('OK');
       },
       onCancel() {
+        dispatch({
+          type: 'UPDATE_CVD',
+          payload: { id: props.id, data: { trangthai: 3, notification: 1 } },
+        });
         console.log('Cancel');
       },
     });

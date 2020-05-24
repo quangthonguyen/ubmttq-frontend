@@ -24,12 +24,21 @@ const loaiCv = [
   'Hướng dẫn',
 ];
 const trangThai = [
-  'Chờ thực hiện',
+  'Mới',
+  'Đã xem',
   'Đề xuất hoàn tất',
+  'Từ chối đề xuất',
   'Hoàn thành',
   'Hết hạn',
 ];
-const colorTrangthai = ['default', 'processing', 'success', 'error'];
+const colorTrangthai = [
+  'default',
+  'default',
+  'processing',
+  'warning',
+  'success',
+  'error',
+];
 function TableCVD() {
   const cvd = useSelector((state) => state.cvdList);
   const usersList = useSelector((state) => state.usersList);
@@ -57,6 +66,9 @@ function TableCVD() {
     return { text: `${e.lastname} ${e.firstname}`, value: e._id };
   });
   const filterLoai = loaiCv.map((e, i) => {
+    return { text: e, value: i };
+  });
+  const filterTrangThai = trangThai.map((e, i) => {
     return { text: e, value: i };
   });
   const columns = [
@@ -190,24 +202,7 @@ function TableCVD() {
         return <Tag color={colorTrangthai[text]}>{trangThai[text]}</Tag>;
       },
       width: '8.5em',
-      filters: [
-        {
-          text: 'Chờ thực hiện',
-          value: 0,
-        },
-        {
-          text: 'Đề xuất thực hiện',
-          value: 1,
-        },
-        {
-          text: 'Hoàn thành',
-          value: 2,
-        },
-        {
-          text: 'Hết hạn',
-          value: 3,
-        },
-      ],
+      filters: filterTrangThai,
       onFilter: (value, record) => record.trangthai === value,
       filterMultiple: false,
     },
@@ -219,7 +214,7 @@ function TableCVD() {
       render: (text, record, index) => {
         return (
           <>
-            {record.trangthai < 2 &&
+            {(record.trangthai < 2 || record.trangthai === 3) &&
             record.thoihan &&
             record.nguoithuchienchinh === userInfo._id ? (
               <DeXuatHoanTat id={record._id} />
@@ -239,7 +234,6 @@ function TableCVD() {
 
   return (
     <>
-      {console.log('table cvd')}
       <div className={style.title}>Quản lý công văn đến</div>
       <DetailCvd id={Open} Open={Open} closeModal={closeModal} />
       <Table
@@ -252,6 +246,17 @@ function TableCVD() {
           return {
             onDoubleClick: (event) => {
               setOpen(record._id);
+            },
+            onClick: (event) => {
+              dispatch({
+                type: 'UPDATE_CVD',
+                payload: { id: record._id, data: { notification: 2 } },
+              });
+              if (record.notification === 1) {
+                dispatch({
+                  type: 'NOTI_GUEST_REMOVE_ONE',
+                });
+              }
             },
           };
         }}

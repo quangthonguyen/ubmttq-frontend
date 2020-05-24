@@ -112,8 +112,7 @@ function CreateCvd() {
             })
             .then((data) => {
               notification.success({
-                message: `Notification `,
-                description: `Văn bản số :${data.sovb} tạo thành công`,
+                message: `Văn bản số ${data.sovb} tạo thành công `,
                 placement: 'bottomRight',
               });
             })

@@ -20,6 +20,13 @@ import {
   reduxRemoveCvdi,
   reduxUpdateCvdi,
 } from '../redux/slice/cvdiList';
+import {
+  reduxAddNotification,
+  reduxAddOneNotiQlcv,
+  reduxAddOneNotiGuest,
+  reduxRemoveOneNotiQlcv,
+  reduxRemoveOneNotiGuest,
+} from '../redux/slice/notification';
 
 const setLocalStorage = (obj) => {
   localStorage.username = obj.username;
@@ -78,7 +85,7 @@ export function* loadCvdList(action) {
             olddata.data.forEach((e) => {
               const th = new Date(e.thoihan);
               if (th.getTime() < Date.now()) {
-                e.trangthai = 3;
+                e.trangthai = 5;
               }
             });
             return olddata;
@@ -104,7 +111,7 @@ export function* guestloadCvdList(action) {
             olddata.data.forEach((e) => {
               const th = new Date(e.thoihan);
               if (e.trangthai === 0 && th.getTime() < Date.now()) {
-                e.trangthai = 3;
+                e.trangthai = 5;
               }
               if (!e.thoihan) {
                 e.trangthai = null;
@@ -152,10 +159,10 @@ export function* updateCvd(action) {
     );
     console.log({ resupdate: updatedCvd.data });
     yield put(reduxUpdateCvd(updatedCvd.data));
-    notification.success({
-      message: `Văn bản số ${updatedCvd.data.sovb} cập nhập thành công `,
-      placement: 'bottomRight',
-    });
+    // notification.success({
+    //   message: `Văn bản số ${updatedCvd.data.sovb} cập nhập thành công `,
+    //   placement: 'bottomRight',
+    // });
   } catch (error) {
     message.error(`Sever error!`);
   }
@@ -214,7 +221,7 @@ export function* loadQlcvList(action) {
             olddata.data.forEach((e) => {
               const th = new Date(e.thoihan);
               if (th.getTime() < Date.now()) {
-                e.trangthai = 3;
+                e.trangthai = 5;
               }
             });
             return olddata;
@@ -291,19 +298,88 @@ export function* updateCvdi(action) {
     message.error(`Sever error!`);
   }
 }
-//socket socketAddCvd
+//socket
 export function* socketAddCvd(action) {
   try {
     yield put(reduxAddCvd(action.payload));
     notification.success({
       message: `Bạn có 1 văn bản đến mới số ${action.payload.sovb} !`,
       placement: 'bottomRight',
+      duration: 0,
     });
   } catch (error) {
     message.error(`Sever error!`);
   }
 }
+// export function* updateNotifi(action) {
+//   try {
+//     console.log(action.payload);
+//     const updatedCvd = yield Axios.patch(
+//       `/cvd/${action.payload.id}`,
+//       action.payload.data
+//     );
+//     console.log({ resupdate: updatedCvd.data });
+//     yield put(reduxUpdateCvd(updatedCvd.data));
+//     notification.success({
+//       message: `Văn bản số ${updatedCvd.data.sovb} cập nhập thành công `,
+//       placement: 'bottomRight',
+//     });
+//   } catch (error) {
+//     message.error(`Sever error!`);
+//   }
+// }
+export function* socketUpdateCvd(action) {
+  try {
+    yield put(reduxUpdateCvd(action.payload));
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
+export function* socketremoveCvd(action) {
+  try {
+    yield put(reduxRemoveCvd({ id: action.payload._id }));
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
+// notification
+export function* loadNotification(action) {
+  try {
+    const usersList = yield Axios.get('/cvd/notiCvd');
+    yield put(reduxAddNotification(usersList.data));
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
 
+export function* notiQlcvAddOne(action) {
+  try {
+    yield put(reduxAddOneNotiQlcv());
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
+export function* notiGuestAddOne(action) {
+  try {
+    yield put(reduxAddOneNotiGuest());
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
+export function* notiQlcvRemoveOne(action) {
+  try {
+    yield put(reduxRemoveOneNotiQlcv());
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
+export function* notiGuestRemoveOne(action) {
+  try {
+    yield put(reduxRemoveOneNotiGuest());
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
 function* watchFetchData() {
   yield takeEvery('LOGIN', login);
   yield takeEvery('LOGOUT', logout);
@@ -328,6 +404,14 @@ function* watchFetchData() {
   yield takeEvery('UPDATE_CVDI', updateCvdi);
   //socket
   yield takeEvery('SOCKET_ADD_CVD', socketAddCvd);
+  yield takeEvery('SOCKET_UPDATE_CVD', socketUpdateCvd);
+  yield takeEvery('SOCKET_REMOVE_CVD', socketremoveCvd);
+  // notification
+  yield takeEvery('LOAD_NOTIFICATION', loadNotification);
+  yield takeEvery('NOTI_QLCV_ADD_ONE', notiQlcvAddOne);
+  yield takeEvery('NOTI_GUEST_ADD_ONE', notiGuestAddOne);
+  yield takeEvery('NOTI_QLCV_REMOVE_ONE', notiQlcvRemoveOne);
+  yield takeEvery('NOTI_GUEST_REMOVE_ONE', notiGuestRemoveOne);
 }
 
 export default watchFetchData;
