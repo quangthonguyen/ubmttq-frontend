@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const userInfo = createSlice({
   name: 'userInfo',
-  initialState: {},
+  initialState: false,
   reducers: {
     getUserInfo(state, action) {
       return action.payload;

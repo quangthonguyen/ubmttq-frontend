@@ -26,6 +26,7 @@ import {
   reduxAddOneNotiGuest,
   reduxRemoveOneNotiQlcv,
   reduxRemoveOneNotiGuest,
+  reduxAddNotificationCvdi,
 } from '../redux/slice/notification';
 
 const setLocalStorage = (obj) => {
@@ -84,7 +85,10 @@ export function* loadCvdList(action) {
             const olddata = JSON.parse(data);
             olddata.data.forEach((e) => {
               const th = new Date(e.thoihan);
-              if (th.getTime() < Date.now()) {
+              if (
+                (e.trangthai < 2 || e.trangthai === 3) &&
+                th.getTime() < Date.now()
+              ) {
                 e.trangthai = 5;
               }
             });
@@ -110,7 +114,10 @@ export function* guestloadCvdList(action) {
             const olddata = JSON.parse(data);
             olddata.data.forEach((e) => {
               const th = new Date(e.thoihan);
-              if (e.trangthai === 0 && th.getTime() < Date.now()) {
+              if (
+                (e.trangthai < 2 || e.trangthai === 3) &&
+                th.getTime() < Date.now()
+              ) {
                 e.trangthai = 5;
               }
               if (!e.thoihan) {
@@ -220,8 +227,14 @@ export function* loadQlcvList(action) {
             const olddata = JSON.parse(data);
             olddata.data.forEach((e) => {
               const th = new Date(e.thoihan);
-              if (th.getTime() < Date.now()) {
+              if (
+                (e.trangthai < 2 || e.trangthai === 3) &&
+                th.getTime() < Date.now()
+              ) {
                 e.trangthai = 5;
+              }
+              if (e.trangthai < 4 && th.getTime() < Date.now() - 172899999) {
+                e.noti = 1;
               }
             });
             return olddata;
@@ -290,10 +303,10 @@ export function* updateCvdi(action) {
     );
     console.log({ resupdate: updatedCvd.data });
     yield put(reduxUpdateCvdi(updatedCvd.data));
-    notification.success({
-      message: `Văn bản đi số ${updatedCvd.data.sovb} cập nhập thành công`,
-      placement: 'bottomRight',
-    });
+    // notification.success({
+    //   message: `Văn bản đi số ${updatedCvd.data.sovb} cập nhập thành công`,
+    //   placement: 'bottomRight',
+    // });
   } catch (error) {
     message.error(`Sever error!`);
   }
@@ -304,6 +317,18 @@ export function* socketAddCvd(action) {
     yield put(reduxAddCvd(action.payload));
     notification.success({
       message: `Bạn có 1 văn bản đến mới số ${action.payload.sovb} !`,
+      placement: 'bottomRight',
+      duration: 0,
+    });
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
+export function* socketAddCvdi(action) {
+  try {
+    yield put(reduxAddCvdi(action.payload));
+    notification.success({
+      message: `Bạn có 1 văn bản đi mới số ${action.payload.sovb} !`,
       placement: 'bottomRight',
       duration: 0,
     });
@@ -342,6 +367,13 @@ export function* socketremoveCvd(action) {
     message.error(`Sever error!`);
   }
 }
+export function* socketremoveCvdi(action) {
+  try {
+    yield put(reduxRemoveCvdi({ id: action.payload._id }));
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
 // notification
 export function* loadNotification(action) {
   try {
@@ -351,7 +383,26 @@ export function* loadNotification(action) {
     message.error(`Sever error!`);
   }
 }
-
+export function* guestLoadNotification(action) {
+  try {
+    const usersList = yield Axios.get(
+      `/cvd/guestNotiCvd?id=${action.payload.id}`
+    );
+    yield put(reduxAddNotification(usersList.data));
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
+export function* guestLoadNotificationCvdi(action) {
+  try {
+    const usersList = yield Axios.get(
+      `/cvdi/guestNotiCvdi?id=${action.payload.id}`
+    );
+    yield put(reduxAddNotificationCvdi(usersList.data));
+  } catch (error) {
+    message.error(`Sever error!`);
+  }
+}
 export function* notiQlcvAddOne(action) {
   try {
     yield put(reduxAddOneNotiQlcv());
@@ -381,17 +432,18 @@ export function* notiGuestRemoveOne(action) {
   }
 }
 function* watchFetchData() {
+  //user
   yield takeEvery('LOGIN', login);
   yield takeEvery('LOGOUT', logout);
   //cvd
-  yield takeEvery('LOAD_USERS_LIST', loadUsersList);
   yield takeEvery('LOAD_CVD_LIST', loadCvdList);
   yield takeEvery('GUEST_LOAD_CVD_LIST', guestloadCvdList);
   yield takeEvery('ADD_CVD', addCvd);
   yield takeEvery('REMOVE_CVD', removeCvd);
   yield takeEvery('UPDATE_CVD', updateCvd);
-  //user
+  //user list
   yield takeEvery('CREATE_USER', createUser);
+  yield takeEvery('LOAD_USERS_LIST', loadUsersList);
   yield takeEvery('UPDATE_USER_LIST', updateUserList);
   yield takeEvery('REMOVE_USER', removeUser);
   //Qlcv
@@ -406,8 +458,13 @@ function* watchFetchData() {
   yield takeEvery('SOCKET_ADD_CVD', socketAddCvd);
   yield takeEvery('SOCKET_UPDATE_CVD', socketUpdateCvd);
   yield takeEvery('SOCKET_REMOVE_CVD', socketremoveCvd);
+  yield takeEvery('SOCKET_ADD_CVDI', socketAddCvdi);
+  // yield takeEvery('SOCKET_UPDATE_CVDI', socketUpdateCvdi);
+  yield takeEvery('SOCKET_REMOVE_CVDI', socketremoveCvdi);
   // notification
   yield takeEvery('LOAD_NOTIFICATION', loadNotification);
+  yield takeEvery('GUEST_LOAD_NOTIFICATION', guestLoadNotification);
+  yield takeEvery('GUEST_LOAD_NOTIFICATIONCVDI', guestLoadNotificationCvdi);
   yield takeEvery('NOTI_QLCV_ADD_ONE', notiQlcvAddOne);
   yield takeEvery('NOTI_GUEST_ADD_ONE', notiGuestAddOne);
   yield takeEvery('NOTI_QLCV_REMOVE_ONE', notiQlcvRemoveOne);

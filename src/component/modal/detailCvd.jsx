@@ -45,7 +45,7 @@ function DetailCvd(props) {
               type: 'UPDATE_CVD',
               payload: {
                 id: props.Open,
-                data: { trangthai: 1, notification: 2 },
+                data: { trangthai: 1 },
               },
             });
           }
@@ -55,7 +55,7 @@ function DetailCvd(props) {
   }, [props.Open]);
 
   const {
-    stt,
+    // stt,
     sovb,
     loaivb,
     ngayden,
@@ -102,24 +102,17 @@ function DetailCvd(props) {
         footer={[]}
       >
         <Row gutter={[5, 5]}>
-          <Col span={12}>
+          {/* <Col span={12}>
             <Text strong={true}>STT : </Text>
             {stt}
-          </Col>
+          </Col> */}
           <Col span={12}>
             <Text strong={true}>Số VB : </Text>
             {sovb}
           </Col>
-        </Row>
-
-        <Row gutter={[5, 5]}>
           <Col span={12}>
             <Text strong={true}>Loại VB : </Text>
             {loaiCv[loaivb]}
-          </Col>
-          <Col span={12}>
-            <Text strong={true}>Đơn vị gửi : </Text>
-            {donvigui}
           </Col>
         </Row>
 
@@ -131,6 +124,13 @@ function DetailCvd(props) {
           <Col span={12}>
             <Text strong={true}>Thời hạn : </Text>
             {thoihan ? moment(thoihan).format('DD/MM/YYYY') : ''}
+          </Col>
+        </Row>
+
+        <Row gutter={[5, 5]}>
+          <Col span={24}>
+            <Text strong={true}>Đơn vị gửi : </Text>
+            {donvigui}
           </Col>
         </Row>
 

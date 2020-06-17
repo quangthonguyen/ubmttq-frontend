@@ -13,3 +13,9 @@
 .row {
   background-color: red;
 }
+.notification {
+  background-color: #9cd9ff;
+  &:hover td {
+    background-color: #8bd2fd !important;
+  }
+}

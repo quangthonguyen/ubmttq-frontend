@@ -19,6 +19,11 @@ const loaiCv = [
   'Báo cáo',
   'Thông báo',
   'Công văn',
+  'Thông tin',
+  'Nghi quyết',
+  'Thư mời',
+  'Chương trình',
+  'Hướng dẫn',
 ];
 
 const Download = (props) => {

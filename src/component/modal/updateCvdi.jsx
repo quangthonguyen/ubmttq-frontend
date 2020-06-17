@@ -135,7 +135,7 @@ function UpdateCvdi(props) {
           form={form}
           labelAlign={'left'}
           initialValues={{
-            stt: Cvd.stt,
+            // stt: Cvd.stt,
             sovb: Cvd.sovb,
             loaivb: Cvd.loaivb,
             ngaythang: moment(Cvd.ngaythang),
@@ -146,7 +146,7 @@ function UpdateCvdi(props) {
           }}
         >
           <Row gutter={10}>
-            <Col span={12}>
+            {/* <Col span={12}>
               <Form.Item
                 labelCol={{ span: 8 }}
                 name="stt"
@@ -160,7 +160,7 @@ function UpdateCvdi(props) {
               >
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 8 }}
@@ -176,11 +176,9 @@ function UpdateCvdi(props) {
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={10}>
             <Col span={12}>
               <Form.Item
-                labelCol={{ span: 8 }}
+                // labelCol={{ span: 8 }}
                 name="loaivb"
                 label="Loại"
                 rules={[
@@ -201,9 +199,11 @@ function UpdateCvdi(props) {
                 </Select>
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={10}>
             <Col span={12}>
               <Form.Item
-                labelCol={{ span: 9 }}
+                // labelCol={{ span: 9 }}
                 name="ngaythang"
                 label="Ngày tháng"
                 rules={[
@@ -216,29 +216,30 @@ function UpdateCvdi(props) {
                 <DatePicker format={'DD/MM/YYYY'} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item
+                name="tacgia"
+                label="Tác giả"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Bắt buộc!',
+                  },
+                ]}
+              >
+                <Select>
+                  {usersList.map((value, index) => {
+                    return (
+                      <Option
+                        key={index}
+                        value={value._id}
+                      >{`${value.lastname} ${value.firstname}`}</Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+            </Col>
           </Row>
-
-          <Form.Item
-            name="tacgia"
-            label="Tác giả"
-            rules={[
-              {
-                required: true,
-                message: 'Bắt buộc!',
-              },
-            ]}
-          >
-            <Select>
-              {usersList.map((value, index) => {
-                return (
-                  <Option
-                    key={index}
-                    value={value._id}
-                  >{`${value.lastname} ${value.firstname}`}</Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
 
           <Form.Item
             name="nguoithuchien"

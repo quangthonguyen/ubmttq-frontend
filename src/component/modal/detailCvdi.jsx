@@ -46,7 +46,7 @@ function DetailCvd(props) {
   }, [props.Open]);
 
   const {
-    stt,
+    // stt,
     sovb,
     loaivb,
     ngaythang,
@@ -92,33 +92,32 @@ function DetailCvd(props) {
         footer={[]}
       >
         <Row gutter={[5, 5]}>
-          <Col span={12}>
+          {/* <Col span={12}>
             <Text strong={true}>STT : </Text>
             {stt}
-          </Col>
+          </Col> */}
           <Col span={12}>
             <Text strong={true}>Số VB : </Text>
             {sovb}
           </Col>
-        </Row>
 
-        <Row gutter={[5, 5]}>
           <Col span={12}>
             <Text strong={true}>Loại VB : </Text>
             {loaiCv[loaivb]}
           </Col>
+        </Row>
 
+        <Row gutter={[5, 5]}>
           <Col span={12}>
             <Text strong={true}>Ngày tháng : </Text>
             {moment(ngaythang).format('DD/MM/YYYY')}
           </Col>
-        </Row>
-        <Row gutter={[5, 5]}>
-          <Col span={24}>
+          <Col span={12}>
             <Text strong={true}>Tác giả : </Text>
             {tacgia ? namenthc() : ''}
           </Col>
         </Row>
+
         <Row gutter={[5, 5]}>
           <Col span={24}>
             <Text strong={true}>Người thực hiện : </Text>

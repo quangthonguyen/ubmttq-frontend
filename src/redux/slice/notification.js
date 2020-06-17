@@ -2,10 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const nofication = createSlice({
   name: 'nofication',
-  initialState: {},
+  initialState: false,
   reducers: {
     reduxAddNotification(state, action) {
-      return action.payload;
+      return { ...state, notiCvd: action.payload.notiCvd };
+    },
+    reduxAddNotificationCvdi(state, action) {
+      return { ...state, notiCvdi: action.payload.notiCvd };
     },
     reduxAddOneNotiQlcv(state, action) {
       state.qlcv++;
@@ -35,6 +38,7 @@ export const {
   reduxAddOneNotiGuest,
   reduxRemoveOneNotiQlcv,
   reduxRemoveOneNotiGuest,
+  reduxAddNotificationCvdi,
 } = actions;
 // Export the reducer, either as a default or named export
 export default reducer;

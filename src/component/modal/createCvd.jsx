@@ -13,6 +13,7 @@ import {
   notification,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import moment from 'moment';
 import Axios from '../../axios/configAxios';
 import { useSelector, useDispatch } from 'react-redux';
 const { Option } = Select;
@@ -38,6 +39,7 @@ function CreateCvd() {
   const [Open, setOpen] = React.useState(false);
   const [file, setfile] = React.useState({ filepatch: '', filename: '' });
   const [precentUpload, setprecentUpload] = React.useState(0);
+  const [nguoithuhienList, setnguoithuhienList] = React.useState([]);
   const [form] = Form.useForm();
   const usersList = useSelector((state) => state.usersList);
   const dispatch = useDispatch();
@@ -131,7 +133,7 @@ function CreateCvd() {
       >
         <Form form={form} labelAlign={'left'}>
           <Row gutter={10}>
-            <Col span={12}>
+            {/* <Col span={12}>
               <Form.Item
                 labelCol={{ span: 8 }}
                 name="stt"
@@ -145,7 +147,7 @@ function CreateCvd() {
               >
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 8 }}
@@ -161,8 +163,6 @@ function CreateCvd() {
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={10}>
             <Col span={12}>
               <Form.Item
                 labelCol={{ span: 8 }}
@@ -186,7 +186,44 @@ function CreateCvd() {
                 </Select>
               </Form.Item>
             </Col>
+          </Row>
+
+          <Row gutter={10}>
             <Col span={12}>
+              <Form.Item
+                labelCol={{ span: 8 }}
+                name="ngayden"
+                label="Ngày đến"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Bắt buộc!',
+                  },
+                ]}
+              >
+                <DatePicker
+                  format={'DD/MM/YYYY'}
+                  style={{ width: '100%' }}
+                  disabledDate={(current) => {
+                    return current && current >= moment().endOf('day');
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item labelCol={{ span: 8 }} name="thoihan" label="Thời hạn">
+                <DatePicker
+                  format={'DD/MM/YYYY'}
+                  style={{ width: '100%' }}
+                  disabledDate={(current) => {
+                    return current && current < moment().endOf('day');
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={10}>
+            <Col span={24}>
               <Form.Item
                 name="donvigui"
                 label="Đơn vị gửi"
@@ -201,29 +238,6 @@ function CreateCvd() {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={10}>
-            <Col span={12}>
-              <Form.Item
-                labelCol={{ span: 8 }}
-                name="ngayden"
-                label="Ngày đến"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Bắt buộc!',
-                  },
-                ]}
-              >
-                <DatePicker format={'DD/MM/YYYY'} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item labelCol={{ span: 8 }} name="thoihan" label="Thời hạn">
-                <DatePicker format={'DD/MM/YYYY'} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-          </Row>
-
           <Form.Item
             name="nguoithuchien"
             label="Người thực hiện"
@@ -234,7 +248,12 @@ function CreateCvd() {
               },
             ]}
           >
-            <Select mode="multiple">
+            <Select
+              mode="multiple"
+              onChange={(value, option) => {
+                setnguoithuhienList(option);
+              }}
+            >
               {usersList.map((value, index) => {
                 return (
                   <Option
@@ -245,7 +264,7 @@ function CreateCvd() {
               })}
             </Select>
           </Form.Item>
-
+          {console.log(nguoithuhienList)}
           <Form.Item
             name="nguoithuchienchinh"
             label="Người thực hiện chính"
@@ -257,12 +276,12 @@ function CreateCvd() {
             ]}
           >
             <Select>
-              {usersList.map((value, index) => {
+              {nguoithuhienList.map((value, index) => {
                 return (
                   <Option
                     key={index}
-                    value={value._id}
-                  >{`${value.lastname} ${value.firstname}`}</Option>
+                    value={value.value}
+                  >{`${value.children} `}</Option>
                 );
               })}
             </Select>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Tag } from 'antd';
+import { Table } from 'antd';
 import moment from 'moment';
 import CreateCvd from '../modal/createCvd';
 import DeleteModal from '../modal/deleteCvd';
@@ -58,14 +58,14 @@ function TableCVD() {
     //     return '';
     //   },
     // },
-    {
-      title: 'Stt',
-      dataIndex: 'stt',
-      key: 'stt',
-      ellipsis: true,
-      width: '4em',
-      sorter: true,
-    },
+    // {
+    //   title: 'Stt',
+    //   dataIndex: 'stt',
+    //   key: 'stt',
+    //   ellipsis: true,
+    //   width: '4em',
+    //   sorter: true,
+    // },
     {
       title: 'Số',
       dataIndex: 'sovb',

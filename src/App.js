@@ -25,9 +25,6 @@ function App() {
     dispatch({
       type: 'LOAD_USERS_LIST',
     });
-    dispatch({
-      type: 'LOAD_NOTIFICATION',
-    });
   }, []);
 
   return (

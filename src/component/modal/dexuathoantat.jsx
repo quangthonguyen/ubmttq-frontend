@@ -15,13 +15,16 @@ function DeleteCvd(props) {
       centered: true,
       title: 'Công văn này đã hoàn tất?',
       icon: <ExclamationCircleOutlined />,
-      okText: 'Yes',
+      okText: 'Đề xuất hoàn thành',
       okType: 'success',
-      cancelText: 'No',
+      cancelText: 'Hủy',
       onOk() {
         dispatch({
           type: 'UPDATE_CVD',
-          payload: { id: props.id, data: { trangthai: 2, notification: 3 } },
+          payload: {
+            id: props.id,
+            data: { trangthai: 2, notification2: 'true' },
+          },
         });
         console.log('OK');
       },

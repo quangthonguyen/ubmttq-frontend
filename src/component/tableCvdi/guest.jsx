@@ -67,14 +67,14 @@ function TableCVDI() {
     //     return '';
     //   },
     // },
-    {
-      title: 'Stt',
-      dataIndex: 'stt',
-      key: 'stt',
-      width: '4em',
-      ellipsis: true,
-      sorter: true,
-    },
+    // {
+    //   title: 'Stt',
+    //   dataIndex: 'stt',
+    //   key: 'stt',
+    //   width: '4em',
+    //   ellipsis: true,
+    //   sorter: true,
+    // },
     {
       title: 'Số',
       dataIndex: 'sovb',
@@ -193,10 +193,24 @@ function TableCVDI() {
       <div className={style.title}>Quản lý công văn đi</div>
       <DetailCvdi id={Open} Open={Open} closeModal={closeModal} />
       <Table
+        rowClassName={(record, index) => {
+          return record.notification ? style.notification : '';
+        }}
         onRow={(record, rowIndex) => {
           return {
             onDoubleClick: (event) => {
               setOpen(record._id);
+            },
+            onClick: (event) => {
+              if (record.notification) {
+                dispatch({
+                  type: 'UPDATE_CVDI',
+                  payload: { id: record._id, data: { notification: 'false' } },
+                });
+                // dispatch({
+                //   type: 'LOAD_NOTIFICATION',
+                // });
+              }
             },
           };
         }}

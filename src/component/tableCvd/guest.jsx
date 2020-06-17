@@ -83,14 +83,14 @@ function TableCVD() {
     //     return '';
     //   },
     // },
-    {
-      title: 'Stt',
-      dataIndex: 'stt',
-      key: 'stt',
-      ellipsis: true,
-      width: '4em',
-      sorter: true,
-    },
+    // {
+    //   title: 'Stt',
+    //   dataIndex: 'stt',
+    //   key: 'stt',
+    //   ellipsis: true,
+    //   width: '4em',
+    //   sorter: true,
+    // },
     {
       title: 'Số',
       dataIndex: 'sovb',
@@ -238,9 +238,7 @@ function TableCVD() {
       <DetailCvd id={Open} Open={Open} closeModal={closeModal} />
       <Table
         rowClassName={(record, index) => {
-          return record.notification && record.notification === 1
-            ? style.noti
-            : '';
+          return record.notification ? style.noti : '';
         }}
         onRow={(record, rowIndex) => {
           return {
@@ -248,14 +246,17 @@ function TableCVD() {
               setOpen(record._id);
             },
             onClick: (event) => {
-              dispatch({
-                type: 'UPDATE_CVD',
-                payload: { id: record._id, data: { notification: 2 } },
-              });
-              if (record.notification === 1) {
+              if (record.notification) {
                 dispatch({
-                  type: 'NOTI_GUEST_REMOVE_ONE',
+                  type: 'UPDATE_CVD',
+                  payload: {
+                    id: record._id,
+                    data: { notification: 'false' },
+                  },
                 });
+                // dispatch({
+                //   type: 'NOTI_GUEST_REMOVE_ONE',
+                // });
               }
             },
           };

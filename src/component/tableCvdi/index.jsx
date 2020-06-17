@@ -58,14 +58,14 @@ function TableCVDI() {
     //     return '';
     //   },
     // },
-    {
-      title: 'Stt',
-      dataIndex: 'stt',
-      key: 'stt',
-      width: '4em',
-      ellipsis: true,
-      sorter: true,
-    },
+    // {
+    //   title: 'Stt',
+    //   dataIndex: 'stt',
+    //   key: 'stt',
+    //   width: '4em',
+    //   ellipsis: true,
+    //   sorter: true,
+    // },
     {
       title: 'Số',
       dataIndex: 'sovb',
