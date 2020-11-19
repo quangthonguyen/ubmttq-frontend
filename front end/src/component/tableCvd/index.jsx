@@ -1,20 +1,13 @@
 import React from 'react';
-import { Table, Tag, Button } from 'antd';
-import {
-  EditOutlined,
-  DeleteOutlined,
-  CheckCircleOutlined,
-} from '@ant-design/icons';
+import { Table } from 'antd';
 import moment from 'moment';
 import CreateCvd from '../modal/createCvd';
 import DeleteModal from '../modal/deleteCvd';
 import DetailCvd from '../modal/detailCvd';
 import UpdateModal from '../modal/updataCvd';
-import FinishModal from '../modal/finish';
 import style from './tableCvd.module.scss';
-import ExportExcel from '../exportExcel/exportExcel';
 import { useSelector, useDispatch } from 'react-redux';
-import { useState } from 'react';
+import Test from '../exportExcel/exportExcel';
 
 const loaiCv = [
   'Thông tư',
@@ -32,31 +25,14 @@ const loaiCv = [
   'Chương trình',
   'Hướng dẫn',
 ];
-const trangThai = [
-  'Mới',
-  'Đã xem',
-  'Đề xuất hoàn tất',
-  'Từ chối đề xuất',
-  'Hoàn thành',
-  'Hết hạn',
-];
-const colorTrangthai = [
-  'default',
-  'default',
-  'processing',
-  'warning',
-  'success',
-  'error',
-];
+const trangThai = ['Đã gửi', 'Đã xem', 'Hoàn thành'];
 
 function TableCVD() {
-  const [load, setload] = useState(true);
   const cvd = useSelector((state) => state.cvdList);
   const usersList = useSelector((state) => state.usersList);
   const dispatch = useDispatch();
   React.useEffect(() => {
-    dispatch({ type: 'LOAD_QLCV_LIST', payload: { page: 1, limit: 15 } });
-    setload(false);
+    dispatch({ type: 'LOAD_CVD_LIST', payload: { page: 1, limit: 15 } });
   }, []);
   // for modal detail
   const [Open, setOpen] = React.useState(false);
@@ -70,17 +46,14 @@ function TableCVD() {
   const filterLoai = loaiCv.map((e, i) => {
     return { text: e, value: i };
   });
-  const filterTrangThai = trangThai.map((e, i) => {
-    return { text: e, value: i };
-  });
   const columns = [
     // {
     //   title: 'id',
     //   dataIndex: '_id',
     //   key: '_id',
-    //   width: '0px',
-    //   className: style.hiddenID,
     //   ellipsis: true,
+    //   className: style.hiddenID,
+    //   width: '0px',
     //   render: () => {
     //     return '';
     //   },
@@ -89,29 +62,28 @@ function TableCVD() {
     //   title: 'Stt',
     //   dataIndex: 'stt',
     //   key: 'stt',
-    //   width: '4em',
     //   ellipsis: true,
+    //   width: '4em',
     //   sorter: true,
     // },
     {
       title: 'Số',
       dataIndex: 'sovb',
       key: 'sovb',
-      width: '4em',
       ellipsis: true,
+      width: '4em',
       sorter: true,
     },
     {
       title: 'Loại',
       dataIndex: 'loaivb',
       key: 'loaivb',
-      width: '6.5em',
       ellipsis: true,
+      width: '6.5em',
       render: (text, record, index) => {
         return loaiCv[text];
       },
       filters: filterLoai,
-      onFilter: (value, record) => record.loaivb === value,
       filterMultiple: false,
     },
     {
@@ -150,8 +122,8 @@ function TableCVD() {
       ellipsis: true,
       width: '9.75em',
       filters: filterNth,
-      onFilter: (value, record) => true,
       filterMultiple: false,
+      onFilter: (value, record) => true,
       render: (text, record, index) => {
         if (usersList.length === 0) {
           return '';
@@ -191,67 +163,21 @@ function TableCVD() {
       key: 'thoihan',
       ellipsis: true,
       width: '6.5em',
+      sorter: true,
       render: (text, record, index) => {
         return text ? moment(text).format('DD/MM/YYYY') : '';
       },
-      sorter: true,
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'trangthai',
-      key: 'trangthai',
-      ellipsis: true,
-      width: '9em',
-      render: (text, record, index) => {
-        return <Tag color={colorTrangthai[text]}>{trangThai[text]}</Tag>;
-      },
-      filters: filterTrangThai,
-      onFilter: (value, record) => record.trangthai === value,
-      filterMultiple: false,
     },
     {
       title: 'Action',
-      key: 'action',
+      key: 'trangthai',
       ellipsis: true,
-      width: '6.5em',
+      width: '5em',
       render: (text, record, index) => {
         return (
           <>
-            {record.trangthai < 2 ? (
-              <>
-                <UpdateModal id={record._id} />
-                <DeleteModal id={record._id} />
-              </>
-            ) : (
-              <>
-                <Button
-                  type="link"
-                  icon={<EditOutlined />}
-                  size="small"
-                  disabled={true}
-                />
-                <Button
-                  type="link"
-                  icon={<DeleteOutlined />}
-                  size="small"
-                  disabled={true}
-                />
-              </>
-            )}
-            {record.trangthai === 2 || record.trangthai === 3 ? (
-              <>
-                <FinishModal id={record._id} />
-              </>
-            ) : (
-              <>
-                <Button
-                  type="link"
-                  icon={<CheckCircleOutlined />}
-                  size="small"
-                  disabled={true}
-                />
-              </>
-            )}
+            <UpdateModal id={record._id} />
+            <DeleteModal id={record._id} />
           </>
         );
       },
@@ -260,37 +186,23 @@ function TableCVD() {
 
   return (
     <>
+      {console.log('table cvd')}
       <div className={style.title}>
-        Quản lý công việc
+        Quản lý công văn đến
         <div>
-          {/* <CreateCvd /> */}
-          <ExportExcel list={cvd.data} style={{ marginLeft: '10px' }} />
+          <CreateCvd />
+          <Test list={cvd.data} style={{ marginLeft: '10px' }} />
         </div>
       </div>
       <DetailCvd id={Open} Open={Open} closeModal={closeModal} />
       <Table
-        rowClassName={(record, index) => {
-          return record.notification2 ? style.notification : '';
-        }}
         onRow={(record, rowIndex) => {
           return {
             onDoubleClick: (event) => {
               setOpen(record._id);
             },
-            onClick: (event) => {
-              if (record.notification2) {
-                dispatch({
-                  type: 'UPDATE_CVD',
-                  payload: { id: record._id, data: { notification2: 'false' } },
-                });
-                // dispatch({
-                //   type: 'LOAD_NOTIFICATION',
-                // });
-              }
-            },
           };
         }}
-        loading={load}
         dataSource={cvd.data}
         columns={columns}
         size="small"
@@ -318,7 +230,7 @@ function TableCVD() {
               : ''
           }`;
           dispatch({
-            type: 'LOAD_QLCV_LIST',
+            type: 'LOAD_CVD_LIST',
             payload: {
               page: pagination.current,
               limit: pagination.pageSize,
@@ -326,25 +238,26 @@ function TableCVD() {
               sorter: Sorter,
             },
           });
+          console.log(sorter);
         }}
         pagination={{
           defaultPageSize: 15,
           position: ['bottomCenter'],
           total: cvd.pagination ? cvd.pagination.total : 0,
-          pageSizeOptions: [5, 10, 15, 50, 100, Infinity],
+          pageSizeOptions: [5, 10, 15, 50, 100, 500, Infinity],
           showLessItems: true,
           showSizeChanger: true,
           onChange: (page, pageSize) => {
             // console.log('page: ', page, ' pageSize: ', pageSize);
             // dispatch({
-            //   type: 'LOAD_QLCV_LIST',
+            //   type: 'LOAD_CVD_LIST',
             //   payload: { page: page, limit: pageSize },
             // });
           },
           onShowSizeChange: (current, size) => {
             // console.log('current: ', current, ' size: ', size);
             // dispatch({
-            //   type: 'LOAD_QLCV_LIST',
+            //   type: 'LOAD_CVD_LIST',
             //   payload: { page: 1, limit: size },
             // });
           },
@@ -354,4 +267,4 @@ function TableCVD() {
   );
 }
 
-export default TableCVD;
+export default React.memo(TableCVD);

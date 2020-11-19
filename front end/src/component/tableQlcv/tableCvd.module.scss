@@ -1,0 +1,13 @@
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 16px;
+  margin-bottom: 8px;
+}
+.notification {
+  background-color: #9cd9ff;
+  &:hover td {
+    background-color: #8bd2fd !important;
+  }
+}

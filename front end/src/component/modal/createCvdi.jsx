@@ -10,14 +10,11 @@ import {
   Progress,
   Row,
   Col,
-  Tooltip,
   notification,
 } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import Axios from '../../axios/configAxios';
 import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
-
 const { Option } = Select;
 const { TextArea } = Input;
 const loaiCv = [
@@ -37,12 +34,10 @@ const loaiCv = [
   'Hướng dẫn',
 ];
 
-function UpdateCvd(props) {
+function CreateCvd() {
   const [Open, setOpen] = React.useState(false);
   const [file, setfile] = React.useState({ filepatch: '', filename: '' });
   const [precentUpload, setprecentUpload] = React.useState(0);
-  const [nguoithuhienList, setnguoithuhienList] = React.useState([]);
-  const [Cvd, setCvd] = React.useState({});
   const [form] = Form.useForm();
   const usersList = useSelector((state) => state.usersList);
   const dispatch = useDispatch();
@@ -50,15 +45,9 @@ function UpdateCvd(props) {
   const closeModal = () => {
     setOpen(false);
   };
-  const openModal = async () => {
-    await Axios.get(`/cvd/${props.id}`)
-      .then((data) => {
-        setCvd(data.data);
-      })
-      .catch((error) => console.log(error));
+  const openModal = () => {
     setOpen(true);
   };
-
   const changePdf = (e) => {
     setprecentUpload(0);
     // append new form
@@ -83,69 +72,44 @@ function UpdateCvd(props) {
       })
       .catch((error) => console.log(error));
   };
-  // const arrayDefaultValueNth = Cvd.nguoithuchien
-  //   ? Cvd.nguoithuchien.forEach((v1) => {
-  //       return usersList.map((v, i) => {
-  //         if (v._id == v1) {
-  //           return v;
-  //         }
-  //       });
-  //     })
-  //   : [];
-
   return (
     <>
-      <Tooltip title="Update" placement="bottom">
-        <Button
-          type="link"
-          icon={<EditOutlined />}
-          size="small"
-          onClick={openModal}
-        />
-      </Tooltip>
-
+      <Button icon={<PlusOutlined />} size={'small'} onClick={openModal}>
+        Thêm
+      </Button>
       <Modal
-        title="Cập nhập công văn đến"
+        title="Thêm công văn đi"
         visible={Open}
         onOk={() => {
           form
             .validateFields()
             .then((data) => {
-              const temp =
-                file.filepatch === '' && file.filename === ''
-                  ? {}
-                  : { ...file };
-              data.thoihan
-                ? (dataCvd = {
-                    ...data,
-                    thoihan: data.thoihan._d.toString(),
-                    ngayden: data.ngayden._d.toString(),
-                    ...temp,
-                  })
-                : (dataCvd = {
-                    ...data,
-                    ngayden: data.ngayden._d.toString(),
-                    ...temp,
-                  });
+              dataCvd = {
+                ...data,
+                ngaythang: data.ngaythang._d.toString(),
+                ...file,
+              };
               return dataCvd;
             })
             .then((data) => {
-              dispatch({
-                type: 'UPDATE_CVD',
-                payload: { id: props.id, data: data },
-              });
+              console.log(data);
+              dispatch({ type: 'ADD_CVDI', payload: data });
+              return data;
+            })
+            .then((data) => {
+              setOpen(false);
               return data;
             })
             .then((data) => {
               notification.success({
-                message: `Văn bản số ${data.sovb} cập nhập thành công `,
+                message: `Notification `,
+                description: `Văn bản đi số :${data.sovb} tạo thành công`,
                 placement: 'bottomRight',
               });
             })
-            .then(() => {
-              setOpen(false);
-              setfile({ filepatch: '', filename: '' });
-            })
+            .then(() => form.resetFields())
+            .then(() => setfile({ filepatch: '', filename: '' }))
+            .then(() => setprecentUpload(0))
             .catch((err) => console.log(err));
         }}
         onCancel={() => {
@@ -153,31 +117,16 @@ function UpdateCvd(props) {
           form.resetFields();
           closeModal();
         }}
-        okText="Cập nhập"
+        okText="Tạo"
         cancelText="Hủy"
       >
-        <Form
-          form={form}
-          labelAlign={'left'}
-          initialValues={{
-            // stt: Cvd.stt,
-            sovb: Cvd.sovb,
-            loaivb: Cvd.loaivb,
-            ngayden: moment(Cvd.ngayden),
-            thoihan: moment(Cvd.thoihan),
-            nguoithuchien: Cvd.nguoithuchien,
-            nguoithuchienchinh: Cvd.nguoithuchienchinh,
-            donvigui: Cvd.donvigui,
-            noidungvb: Cvd.noidungvb,
-            noidungbutphe: Cvd.noidungbutphe,
-          }}
-        >
+        <Form form={form} labelAlign={'left'}>
           <Row gutter={10}>
             {/* <Col span={12}>
               <Form.Item
                 labelCol={{ span: 8 }}
                 name="stt"
-                label="STT"
+                label="Stt"
                 rules={[
                   {
                     required: true,
@@ -203,10 +152,9 @@ function UpdateCvd(props) {
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-
             <Col span={12}>
               <Form.Item
-                labelCol={{ span: 8 }}
+                // labelCol={{ span: 8 }}
                 name="loaivb"
                 label="Loại"
                 rules={[
@@ -228,13 +176,12 @@ function UpdateCvd(props) {
               </Form.Item>
             </Col>
           </Row>
-
           <Row gutter={10}>
             <Col span={12}>
               <Form.Item
-                labelCol={{ span: 8 }}
-                name="ngayden"
-                label="Ngày đến"
+                // labelCol={{ span: 9 }}
+                name="ngaythang"
+                label="Ngày tháng"
                 rules={[
                   {
                     required: true,
@@ -242,40 +189,30 @@ function UpdateCvd(props) {
                   },
                 ]}
               >
-                <DatePicker
-                  format={'DD/MM/YYYY'}
-                  style={{ width: '100%' }}
-                  disabledDate={(current) => {
-                    return current && current >= moment().endOf('day');
-                  }}
-                />
+                <DatePicker format={'DD/MM/YYYY'} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item labelCol={{ span: 8 }} name="thoihan" label="Thời hạn">
-                <DatePicker
-                  format={'DD/MM/YYYY'}
-                  style={{ width: '100%' }}
-                  disabledDate={(current) => {
-                    return current && current < moment().endOf('day');
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={10}>
-            <Col span={24}>
               <Form.Item
-                name="donvigui"
-                label="Đơn vị gửi"
+                name="tacgia"
+                label="Tác giả"
                 rules={[
                   {
                     required: true,
-                    message: 'Please input the value!',
+                    message: 'Bắt buộc!',
                   },
                 ]}
               >
-                <Input />
+                <Select>
+                  {usersList.map((value, index) => {
+                    return (
+                      <Option
+                        key={index}
+                        value={value._id}
+                      >{`${value.lastname} ${value.firstname}`}</Option>
+                    );
+                  })}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -290,13 +227,7 @@ function UpdateCvd(props) {
               },
             ]}
           >
-            <Select
-              mode="multiple"
-              onChange={(value, option) => {
-                console.log(option);
-                setnguoithuhienList(option);
-              }}
-            >
+            <Select mode="multiple">
               {usersList.map((value, index) => {
                 return (
                   <Option
@@ -309,8 +240,8 @@ function UpdateCvd(props) {
           </Form.Item>
 
           <Form.Item
-            name="nguoithuchienchinh"
-            label="Người thực hiện chính"
+            name="nguoinhan"
+            label="Người nhận"
             rules={[
               {
                 required: true,
@@ -318,32 +249,15 @@ function UpdateCvd(props) {
               },
             ]}
           >
-            <Select>
-              {nguoithuhienList.length === 0 ? (
-                <>
-                  {Cvd.nguoithuchien
-                    ? usersList.map((value, index) => {
-                        if (Cvd.nguoithuchien.indexOf(value._id) !== -1) {
-                          return (
-                            <Option
-                              key={index}
-                              value={value._id}
-                            >{`${value.lastname} ${value.firstname}`}</Option>
-                          );
-                        }
-                      })
-                    : ''}
-                </>
-              ) : (
-                nguoithuhienList.map((value, index) => {
-                  return (
-                    <Option
-                      key={index}
-                      value={value.value}
-                    >{`${value.children}`}</Option>
-                  );
-                })
-              )}
+            <Select mode="multiple">
+              {usersList.map((value, index) => {
+                return (
+                  <Option
+                    key={index}
+                    value={value._id}
+                  >{`${value.lastname} ${value.firstname}`}</Option>
+                );
+              })}
             </Select>
           </Form.Item>
 
@@ -359,21 +273,17 @@ function UpdateCvd(props) {
           >
             <TextArea autoSize />
           </Form.Item>
+
           <Form.Item
-            name="noidungbutphe"
-            label="Nội dung bút phê"
+            name="pdf"
             rules={[
               {
                 required: true,
-                message: 'Please input the value!',
+                message: 'Please choose the file!',
               },
             ]}
           >
-            <TextArea autoSize />
-          </Form.Item>
-
-          <Form.Item name="pdf">
-            <Input type="file" onChange={changePdf} accept={'.pdf'} />
+            <Input type="file" onChange={changePdf} />
           </Form.Item>
           {precentUpload > 0 ? (
             <Progress percent={precentUpload} size="small" status="active" />
@@ -386,4 +296,4 @@ function UpdateCvd(props) {
   );
 }
 
-export default UpdateCvd;
+export default CreateCvd;

@@ -13,23 +13,22 @@ function DeleteCvd(props) {
   const showDeleteConfirm = () => {
     confirm({
       centered: true,
-      title: 'Xác nhận công văn này đã hoàn thành?',
+      title: 'Công văn này đã hoàn tất?',
       icon: <ExclamationCircleOutlined />,
-      okText: 'Chấp nhận',
+      okText: 'Đề xuất hoàn thành',
       okType: 'success',
-      cancelText: 'Từ chối',
+      cancelText: 'Hủy',
       onOk() {
         dispatch({
           type: 'UPDATE_CVD',
-          payload: { id: props.id, data: { trangthai: 4, notification: 1 } },
+          payload: {
+            id: props.id,
+            data: { trangthai: 2, notification2: 'true' },
+          },
         });
         console.log('OK');
       },
       onCancel() {
-        dispatch({
-          type: 'UPDATE_CVD',
-          payload: { id: props.id, data: { trangthai: 3, notification: 1 } },
-        });
         console.log('Cancel');
       },
     });

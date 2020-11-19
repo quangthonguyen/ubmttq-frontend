@@ -1,9 +1,6 @@
 import React from 'react';
 import { Modal, Button, Tooltip } from 'antd';
-import {
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons';
+import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 
 const { confirm } = Modal;
@@ -13,32 +10,25 @@ function DeleteCvd(props) {
   const showDeleteConfirm = () => {
     confirm({
       centered: true,
-      title: 'Xác nhận công văn này đã hoàn thành?',
+      title: 'Bạn có chắc chắn muốn xóa công văn này?',
       icon: <ExclamationCircleOutlined />,
-      okText: 'Chấp nhận',
-      okType: 'success',
-      cancelText: 'Từ chối',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
       onOk() {
-        dispatch({
-          type: 'UPDATE_CVD',
-          payload: { id: props.id, data: { trangthai: 4, notification: 1 } },
-        });
+        dispatch({ type: 'REMOVE_CVD', payload: { _id: props.id } });
         console.log('OK');
       },
       onCancel() {
-        dispatch({
-          type: 'UPDATE_CVD',
-          payload: { id: props.id, data: { trangthai: 3, notification: 1 } },
-        });
         console.log('Cancel');
       },
     });
   };
   return (
-    <Tooltip title="Finish" placement="bottom">
+    <Tooltip title="Delete" placement="bottom">
       <Button
         type="link"
-        icon={<CheckCircleOutlined />}
+        icon={<DeleteOutlined />}
         size="small"
         onClick={showDeleteConfirm}
       />
